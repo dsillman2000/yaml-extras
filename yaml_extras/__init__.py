@@ -24,7 +24,10 @@ class ExtrasLoader(yaml.SafeLoader):
         for i in range(len(node.value)):
             key_node, value_node = node.value[i]
             if key_node.tag == "tag:yaml.org,2002:merge":
-                if isinstance(value_node, yaml.ScalarNode) and value_node.tag == "!import":
+                if isinstance(value_node, yaml.ScalarNode) and value_node.tag in (
+                    "!import",
+                    "!import.anchor",
+                ):
                     imported_value = self.construct_object(value_node)
                     data_buffer = StringIO()
                     imported_repr = yaml.SafeDumper(data_buffer).represent_data(imported_value)
@@ -32,12 +35,16 @@ class ExtrasLoader(yaml.SafeLoader):
                 if isinstance(value_node, yaml.SequenceNode):
                     for j in range(len(value_node.value)):
                         subnode = value_node.value[j]
-                        if isinstance(subnode, yaml.ScalarNode) and subnode.tag == "!import":
+                        if isinstance(subnode, yaml.ScalarNode) and subnode.tag in (
+                            "!import",
+                            "!import.anchor",
+                        ):
                             imported_value = self.construct_object(subnode)
                             data_buffer = StringIO()
                             imported_repr = yaml.SafeDumper(data_buffer).represent_data(
                                 imported_value
                             )
                             value_node.value[j] = imported_repr
+                    value_node.value.reverse()
                     node.value[i] = (key_node, value_node)
         super().flatten_mapping(node)

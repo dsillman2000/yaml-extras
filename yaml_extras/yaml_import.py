@@ -47,6 +47,7 @@ class ImportConstructor:
         return self.load(type(loader), import_spec)
 
     def load(self, loader_type: Type[yaml.Loader], import_spec: ImportSpec) -> Any:
+        # Just load the contents of the file
         return yaml.load(import_spec.path.open("r"), loader_type)
 
 
@@ -66,13 +67,13 @@ class ImportAnchorConstructor:
             if isinstance(val, str):
                 import_spec = ImportAnchorSpec.from_str(val)
             else:
-                raise TypeError(f"!import Expected a string, got {type(val)}")
+                raise TypeError(f"!import.anchor Expected a string, got {type(val)}")
         else:
-            raise TypeError(f"!import Expected a string scalar, got {type(node)}")
+            raise TypeError(f"!import.anchor Expected a string scalar, got {type(node)}")
         return self.load(type(loader), import_spec)
 
     def load(self, loader_type: Type[yaml.Loader], import_spec: ImportAnchorSpec) -> Any:
-        # find events by anchor
+        # Find target node events by anchor
         level = 0
         events: list[yaml.Event] = []
         for event in yaml.parse(import_spec.path.open("r"), loader_type):
