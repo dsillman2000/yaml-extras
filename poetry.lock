@@ -186,5 +186,5 @@ PyYAML = ">=6.0,<7.0"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.12"
-content-hash = "d11770ec6e5dbe8c350785cebabd69d4110f29bcf05f19f7acaae244192f3ec5"
+python-versions = "^3.11"
+content-hash = "637b5581ad84204309a13c9c8b3915dfb4fc1b64c1a1f03648e5530d6d4b423a"
