@@ -67,9 +67,13 @@ data = {
 
 ## Roadmap
 
+### P1
 - [x] Add support for `!import` to import other documents into a YAML document.
-- [ ] Add support for `!env` tag to import environment variables.
 - [ ] Utilize this project in a downstream project to generate code and documentation.
+
+### P2
+- [ ] Add support for `!env` tag to import environment variables.
+- [ ] VSCode / Intellisense plugin to navigate through imports using cmd + click
 
 ## Acknowledgements
 
