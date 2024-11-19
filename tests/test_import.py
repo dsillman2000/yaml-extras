@@ -63,10 +63,8 @@ def test_import(
     doc: str,
     other_docs: dict[str, str],
     expected: dict,
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
+    tmp_chdir,
 ):
-    monkeypatch.chdir(tmp_path)
     for path, content in other_docs.items():
         with open(path, "w") as f:
             f.write(content)
@@ -134,10 +132,8 @@ def test_merge_import(
     doc: str,
     other_docs: dict[str, str],
     expected: dict,
-    tmp_path,
-    monkeypatch,
+    tmp_chdir,
 ):
-    monkeypatch.chdir(tmp_path)
     for path, content in other_docs.items():
         with open(path, "w") as f:
             f.write(content)
