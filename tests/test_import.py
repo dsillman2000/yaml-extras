@@ -156,6 +156,14 @@ data: !import.anchor other.yml &ptr
         ),
         pytest.param(
             """
+data: !import.anchor other.yml &ptr
+""",
+            {"other.yml": "inner: &ptr { a: 1 }\n"},
+            {"data": {"a": 1}},
+            id="single flow anchor import",
+        ),
+        pytest.param(
+            """
 content:
   child1: !import.anchor children.yml &child-1
   child2: !import.anchor children.yml &child-2
@@ -208,6 +216,19 @@ items: &list
             },
             {"data": ["foo", "bar", "baz", "buzz"]},
             id="single anchored sequence import",
+        ),
+        pytest.param(
+            """
+data: !import.anchor dict_items.yml &list
+""",
+            {
+                "dict_items.yml": """
+dictionary: {  foo: bar, baz: buzz }
+items: &list [foo, bar, baz, buzz]
+""",
+            },
+            {"data": ["foo", "bar", "baz", "buzz"]},
+            id="single anchored flow sequence import",
         ),
     ],
 )
