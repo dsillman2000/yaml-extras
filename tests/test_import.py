@@ -192,9 +192,20 @@ grandchild1: &grandchild-1
         ),
         pytest.param(
             """
-data: !import.anchor items.yml &list
+data: !import.anchor dict_items.yml &list
 """,
-            {"items.yml": "list: &list\n  - foo\n  - bar\n  - baz\n  - buzz\n"},
+            {
+                "dict_items.yml": """
+dictionary:
+  foo: bar
+  baz: buzz
+items: &list
+  - foo
+  - bar
+  - baz
+  - buzz
+""",
+            },
             {"data": ["foo", "bar", "baz", "buzz"]},
             id="single anchored sequence import",
         ),
