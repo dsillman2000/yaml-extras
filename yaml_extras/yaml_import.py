@@ -86,21 +86,25 @@ class ImportAnchorConstructor:
             ):
                 events = [event]
                 level = 1
-            elif isinstance(event, yaml.events.MappingStartEvent):
-                events.append(event)
-                level += 1
-            elif isinstance(event, yaml.events.MappingEndEvent):
-                events.append(event)
-                level -= 1
-                if level == 0:
-                    # events.pop()
-                    break
+            elif (
+                isinstance(event, yaml.events.SequenceStartEvent)
+                and event.anchor == import_spec.anchor
+            ):
+                events = [event]
+                level = 1
             elif level > 0:
                 events.append(event)
+                if isinstance(event, (yaml.MappingStartEvent, yaml.SequenceStartEvent)):
+                    level += 1
+                elif isinstance(event, (yaml.MappingEndEvent, yaml.SequenceEndEvent)):
+                    level -= 1
+                if level == 0:
+                    break
+        if not events:
+            raise ValueError(f"Anchor '{import_spec.anchor}' not found in {import_spec.path}")
         events = (
             [yaml.StreamStartEvent(), yaml.DocumentStartEvent()]
             + events
             + [yaml.DocumentEndEvent(), yaml.StreamEndEvent()]
         )
-        # print("\n".join(map(str, events)))
         return yaml.load(yaml.emit(evt for evt in events), loader_type)

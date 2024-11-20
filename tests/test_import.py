@@ -150,9 +150,17 @@ def test_merge_import(
             """
 data: !import.anchor other.yml &ptr
 """,
-            {"other.yml": "a: 1"},
+            {"other.yml": "inner: &ptr\n  a: 1\n"},
             {"data": {"a": 1}},
             id="single anchor import",
+        ),
+        pytest.param(
+            """
+data: !import.anchor other.yml &ptr
+""",
+            {"other.yml": "inner: &ptr { a: 1 }\n"},
+            {"data": {"a": 1}},
+            id="single flow anchor import",
         ),
         pytest.param(
             """
@@ -190,6 +198,38 @@ grandchild1: &grandchild-1
             },
             id="nested deep anchor imports",
         ),
+        pytest.param(
+            """
+data: !import.anchor dict_items.yml &list
+""",
+            {
+                "dict_items.yml": """
+dictionary:
+  foo: bar
+  baz: buzz
+items: &list
+  - foo
+  - bar
+  - baz
+  - buzz
+""",
+            },
+            {"data": ["foo", "bar", "baz", "buzz"]},
+            id="single anchored sequence import",
+        ),
+        pytest.param(
+            """
+data: !import.anchor dict_items.yml &list
+""",
+            {
+                "dict_items.yml": """
+dictionary: {  foo: bar, baz: buzz }
+items: &list [foo, bar, baz, buzz]
+""",
+            },
+            {"data": ["foo", "bar", "baz", "buzz"]},
+            id="single anchored flow sequence import",
+        ),
     ],
 )
 def test_import_anchor(
@@ -213,39 +253,34 @@ def test_import_anchor(
         pytest.param(
             """
 content1:
-  <<: [!import.anchor other.yml &ptr1, !import.anchor other.yml &ptr2, !import.anchor another.yml &ptr1, !import.anchor another.yml &ptr2]
+  <<: [!import.anchor other.yml &ptr2, !import.anchor another.yml &ptr1]
 content2:
   <<:
-    - !import.anchor other.yml &ptr1
     - !import.anchor other.yml &ptr2
     - !import.anchor another.yml &ptr1
-    - !import.anchor another.yml &ptr2
 content3:
-  <<: !import.anchor other.yml &ptr1
   <<: !import.anchor other.yml &ptr2
   <<: !import.anchor another.yml &ptr1
-  <<: !import.anchor another.yml &ptr2
 """,
             {
                 "other.yml": """
-a: &ptr1
-  foo: bar
-b: &ptr2
-  bar: baz
+contents:
+  a: &ptr1
+    foo: bar
+  b: &ptr2
+    bar: baz
 """,
                 "another.yml": """
 b: 2
-c: &ptr1
-  bar: bor
-  baz: bor
-d: &ptr2
-  data: doo
+contents:
+  c: &ptr1
+    bar: bor
+    baz: bor
+  d: &ptr2
+    data: doo
 """,
             },
-            {
-                f"content{i}": {"bar": "bor", "baz": "bor", "data": "doo", "foo": "bar"}
-                for i in "123"
-            },
+            {f"content{i}": {"bar": "bor", "baz": "bor"} for i in "123"},
             id="multiple conflicting anchor imports, merged",
         ),
     ],
