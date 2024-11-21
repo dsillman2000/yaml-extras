@@ -11,6 +11,7 @@ class ExtrasLoader(yaml.SafeLoader):
         super().__init__(stream)
         self.add_constructor("!import", yaml_import.ImportConstructor())
         self.add_constructor("!import.anchor", yaml_import.ImportAnchorConstructor())
+        self.add_constructor("!import-all", yaml_import.ImportAllConstructor())
 
     def flatten_mapping(self, node: yaml.MappingNode):
         """The `flatten_mapping` implementation, which handles the "<<" merge key logic in PyYAML,
@@ -27,6 +28,7 @@ class ExtrasLoader(yaml.SafeLoader):
                 if isinstance(value_node, yaml.ScalarNode) and value_node.tag in (
                     "!import",
                     "!import.anchor",
+                    "!import-all",
                 ):
                     imported_value = self.construct_object(value_node)
                     data_buffer = StringIO()
@@ -38,6 +40,7 @@ class ExtrasLoader(yaml.SafeLoader):
                         if isinstance(subnode, yaml.ScalarNode) and subnode.tag in (
                             "!import",
                             "!import.anchor",
+                            "!import-all",
                         ):
                             imported_value = self.construct_object(subnode)
                             data_buffer = StringIO()

@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import pytest
 
@@ -142,11 +141,11 @@ def test_path_pattern_results_named(tmp_path: Path, tmp_chdir, reset_caches):
         PathWithMetadata(tmp_path / "g" / "ho" / "m.l", {"pre_o": "h", "second": "m"}),
     }
     assert set(PathPattern("g/{subpath:**}/{leaf:*}.l").results()) == {
-        PathWithMetadata(tmp_path / "g" / "hi" / "j", {"subpath": "hi", "leaf": "j.l"}),
-        PathWithMetadata(tmp_path / "g" / "hi" / "k", {"subpath": "hi", "leaf": "k.l"}),
-        PathWithMetadata(tmp_path / "g" / "ho" / "l", {"subpath": "ho", "leaf": "l.l"}),
-        PathWithMetadata(tmp_path / "g" / "ho" / "m", {"subpath": "ho", "leaf": "m.l"}),
-        PathWithMetadata(tmp_path / "g" / "ku" / "n", {"subpath": "ku", "leaf": "n.l"}),
-        PathWithMetadata(tmp_path / "g" / "ku" / "o" / "oh", {"subpath": "ku/o", "leaf": "oh.l"}),
-        PathWithMetadata(tmp_path / "g" / "ku" / "o" / "0", {"subpath": "ku/o", "leaf": "0.l"}),
+        PathWithMetadata(tmp_path / "g" / "hi" / "j.l", {"subpath": "hi", "leaf": "j"}),
+        PathWithMetadata(tmp_path / "g" / "hi" / "k.l", {"subpath": "hi", "leaf": "k"}),
+        PathWithMetadata(tmp_path / "g" / "ho" / "l.l", {"subpath": "ho", "leaf": "l"}),
+        PathWithMetadata(tmp_path / "g" / "ho" / "m.l", {"subpath": "ho", "leaf": "m"}),
+        PathWithMetadata(tmp_path / "g" / "ku" / "n.l", {"subpath": "ku", "leaf": "n"}),
+        PathWithMetadata(tmp_path / "g" / "ku" / "o" / "oh.l", {"subpath": "ku/o", "leaf": "oh"}),
+        PathWithMetadata(tmp_path / "g" / "ku" / "o" / "0.l", {"subpath": "ku/o", "leaf": "0"}),
     }

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from functools import lru_cache
-import itertools
 from pathlib import Path
 import re
 from typing import Any
@@ -18,18 +17,9 @@ class PathWithMetadata:
 
 
 NAMED_WILDCARD_PATTERN = re.compile(r"\{(?P<name>\w+):(?P<wildcard>\*\*?)\}")
-UNNAMED_WILDCARD_PATTERN = re.compile(r"(\*|\*\*)")
-# NAMED_WILDCARD_1_PATTERN = re.compile(r"\{(\w+):\*\}")
-# NAMED_WILDCARD_1_POST_PATTERN = re.compile(r"\{(\w+):\[\^\/\]\*\}$")
-WILDCARD_1_PATTERN = re.compile(r"(\*)")
-# NAMED_WILDCARD_2_PATTERN = re.compile(r"\{(\w+):\*\*\}")
-# NAMED_WILDCARD_2_POST_PATTERN = re.compile(r"\{(\w+):(\.\*\}$")
-WILDCARD_2_PATTERN = re.compile(r"(\*\*)")
-NAMED_WILDCARD_RE_PATTERN = re.compile(r"\\{(\w+):([^\}]+)\\}")
-
 REGEX_COUNTERPART = {
     "*": r"[^/]*",
-    "**": r"(?:[^/]*/)*[^/]*",
+    "**": r"(?:[^/]*/?)*[^/]*",
 }
 
 
@@ -50,6 +40,15 @@ class PathPattern:
 
     def __hash__(self):
         return hash(self.pattern)
+
+    @property
+    def names(self) -> list[str]:
+        """Return all named wildcards in the pattern.
+
+        Returns:
+            list[str]: List of named wildcards.
+        """
+        return [match.group("name") for match in NAMED_WILDCARD_PATTERN.finditer(self.pattern)]
 
     @classmethod
     def as_regex(cls, pattern: str) -> re.Pattern:
@@ -75,6 +74,7 @@ class PathPattern:
 
         # Replace named globs
         processed = NAMED_WILDCARD_PATTERN.sub(replace_named_globs, pattern)
+        print(f"{processed = }")
 
         escaped = re.escape(processed)
         re_pattern = escaped.replace(r"\*\*", REGEX_COUNTERPART["**"]).replace(r"\.\*", ".*")
@@ -91,6 +91,7 @@ class PathPattern:
         )
 
         re_pattern = f"{re_pattern}$"
+        print(f"{re_pattern = }")
         return re.compile(re_pattern)
 
     @lru_cache
@@ -116,4 +117,6 @@ class PathPattern:
         for path in paths_to_metadata.keys():
             if match := PathPattern.as_regex(self.pattern).search(str(path)):
                 paths_to_metadata[path] = match.groupdict() or None
+            else:
+                print("DID NOT MATCH! :", path)
         return [PathWithMetadata(path, meta) for path, meta in paths_to_metadata.items()]

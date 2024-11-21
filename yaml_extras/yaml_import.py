@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
 from typing import Any, Type
 import yaml
+
+from yaml_extras.file_utils import PathPattern, PathWithMetadata
 
 
 @dataclass
@@ -108,3 +109,46 @@ class ImportAnchorConstructor:
             + [yaml.DocumentEndEvent(), yaml.StreamEndEvent()]
         )
         return yaml.load(yaml.emit(evt for evt in events), loader_type)
+
+
+@dataclass
+class ImportAllSpec:
+    path_pattern: PathPattern
+
+    @classmethod
+    def from_str(cls, path_pattern_str: str) -> "ImportAllSpec":
+        path_pattern = PathPattern(path_pattern_str)
+        if path_pattern.names != []:
+            raise ValueError(
+                "Named wildcards are not supported in !import-all. Use !import-all-parameterized instead."
+            )
+        return cls(PathPattern(path_pattern_str))
+
+
+@dataclass
+class ImportAllConstructor:
+
+    def __call__(self, loader: yaml.Loader, node: yaml.Node):
+        """Import all files that match a pattern as a sequence of objects.
+
+        Args:
+            loader (yaml.Loader): YAML loader
+            node (yaml.Node): Import-all tagged node
+        """
+        import_spec: ImportAllSpec
+        if isinstance(node, yaml.ScalarNode):
+            val = loader.construct_scalar(node)
+            if isinstance(val, str):
+                import_spec = ImportAllSpec.from_str(val)
+            else:
+                raise TypeError(f"!import-all Expected a string, got {type(val)}")
+        else:
+            raise TypeError(f"!import-all Expected a string scalar, got {type(node)}")
+        return self.load(type(loader), import_spec)
+
+    def load(self, loader_type: Type[yaml.Loader], import_spec: ImportAllSpec) -> Any:
+        # Find and load all files that match the pattern into a sequence of objects
+        return [
+            yaml.load(path_w_metadata.path.open("r"), loader_type)
+            for path_w_metadata in import_spec.path_pattern.results()
+        ]
