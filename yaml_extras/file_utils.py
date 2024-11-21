@@ -16,8 +16,8 @@ class PathWithMetadata:
         return hash((self.path, str(self.metadata)))
 
 
-NAMED_WILDCARD_PATTERN = re.compile(r"\{(?P<name>\w+):(?P<wildcard>\*\*?)\}")
-REGEX_COUNTERPART = {
+NAMED_WILDCARD_PATTERN: re.Pattern = re.compile(r"\{(?P<name>\w+):(?P<wildcard>\*\*?)\}")
+REGEX_COUNTERPART: dict[str, str] = {
     "*": r"[^/]*",
     "**": r"(?:[^/]*/?)*[^/]*",
 }
@@ -62,7 +62,7 @@ class PathPattern:
         """
         global NAMED_WILDCARD_PATTERN, REGEX_COUNTERPART
 
-        def replace_named_globs(match):
+        def replace_named_globs(match: re.Match[str]):
             # Extract the name and wildcard type
             name = match.group("name")
             wildcard = match.group("wildcard")
@@ -115,6 +115,4 @@ class PathPattern:
         for path in paths_to_metadata.keys():
             if match := PathPattern.as_regex(self.pattern).search(str(path)):
                 paths_to_metadata[path] = match.groupdict() or None
-            else:
-                print("DID NOT MATCH! :", path)
         return [PathWithMetadata(path, meta) for path, meta in paths_to_metadata.items()]
