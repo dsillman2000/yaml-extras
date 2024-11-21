@@ -15,17 +15,6 @@ class ImportSpec:
 
 
 @dataclass
-class ImportAnchorSpec(ImportSpec):
-    path: Path
-    anchor: str
-
-    @classmethod
-    def from_str(cls, spec_str: str) -> "ImportAnchorSpec":
-        path_str, anchor = spec_str.split(" &", 1)
-        return cls(Path(path_str), anchor)
-
-
-@dataclass
 class ImportConstructor:
 
     def __call__(self, loader: yaml.Loader, node: yaml.Node):
@@ -49,6 +38,17 @@ class ImportConstructor:
     def load(self, loader_type: Type[yaml.Loader], import_spec: ImportSpec) -> Any:
         # Just load the contents of the file
         return yaml.load(import_spec.path.open("r"), loader_type)
+
+
+@dataclass
+class ImportAnchorSpec:
+    path: Path
+    anchor: str
+
+    @classmethod
+    def from_str(cls, spec_str: str) -> "ImportAnchorSpec":
+        path_str, anchor = spec_str.split(" &", 1)
+        return cls(Path(path_str), anchor)
 
 
 @dataclass
