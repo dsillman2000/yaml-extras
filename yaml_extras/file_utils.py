@@ -74,7 +74,6 @@ class PathPattern:
 
         # Replace named globs
         processed = NAMED_WILDCARD_PATTERN.sub(replace_named_globs, pattern)
-        print(f"{processed = }")
 
         escaped = re.escape(processed)
         re_pattern = escaped.replace(r"\*\*", REGEX_COUNTERPART["**"]).replace(r"\.\*", ".*")
@@ -91,7 +90,6 @@ class PathPattern:
         )
 
         re_pattern = f"{re_pattern}$"
-        print(f"{re_pattern = }")
         return re.compile(re_pattern)
 
     @lru_cache
