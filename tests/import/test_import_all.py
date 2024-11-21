@@ -1,35 +1,9 @@
 from pathlib import Path
-from typing import Any
 
 import pytest
 import yaml
 
 from yaml_extras import ExtrasLoader
-
-
-def loose_equality_for_lists(data1: Any, data2: Any) -> bool:
-    """When two objects contain one or more lists, compare the lists without order and return the
-    resulting equality of the two objects.
-
-    Args:
-        data1 (Any): Loose-equality operand object which may contain one or more lists.
-        data2 (Any): Loose-equality operand object which may contain one or more lists.
-
-    Returns:
-        bool: True if the two objects are loosely equal, False otherwise.
-    """
-    if data1 == data2:
-        return True
-    elif isinstance(data1, list) and isinstance(data2, list):
-        sort_key = str
-        sorted_data1 = sorted(data1, key=sort_key)
-        sorted_data2 = sorted(data2, key=sort_key)
-        return all(loose_equality_for_lists(d1, d2) for d1, d2 in zip(sorted_data1, sorted_data2))
-    elif isinstance(data1, dict) and isinstance(data2, dict):
-        return all(
-            key in data2 and loose_equality_for_lists(data1[key], data2[key]) for key in data1
-        )
-    return False
 
 
 @pytest.mark.parametrize(
@@ -152,7 +126,14 @@ overarching: !import-all data/*.yml
         ),
     ],
 )
-def test_import_all(doc: str, other_docs: dict[str, str], expected: dict, tmp_chdir):
+def test_import_all(
+    doc: str,
+    other_docs: dict[str, str],
+    expected: dict,
+    tmp_chdir,
+    loose_equality_for_lists,
+    reset_caches,
+):
     for path, content in other_docs.items():
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as f:

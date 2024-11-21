@@ -7,13 +7,6 @@ from yaml_extras.file_utils import PathPattern, PathWithMetadata
 DirTree = dict[str, "DirTree | str"]
 
 
-@pytest.fixture
-def reset_caches():
-    yield
-    PathPattern.glob_results.cache_clear()
-    PathPattern.results.cache_clear()
-
-
 def materialize_dir_tree(dir_tree: DirTree, base_dir: Path | None = None) -> None:
     if base_dir is None:
         base_dir = Path.cwd()
