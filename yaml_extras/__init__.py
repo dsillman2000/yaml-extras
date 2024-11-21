@@ -9,8 +9,8 @@ from yaml_extras import yaml_import
 class ExtrasLoader(yaml.SafeLoader):
     def __init__(self, stream):
         super().__init__(stream)
-        self.add_constructor("!import", yaml_import.ImportConstructor())
-        self.add_constructor("!import.anchor", yaml_import.ImportAnchorConstructor())
+        for tag, constructor in yaml_import.RESERVED_TAGS.items():
+            self.add_constructor(tag, constructor())  # type: ignore
 
     def flatten_mapping(self, node: yaml.MappingNode):
         """The `flatten_mapping` implementation, which handles the "<<" merge key logic in PyYAML,
@@ -24,9 +24,9 @@ class ExtrasLoader(yaml.SafeLoader):
         for i in range(len(node.value)):
             key_node, value_node = node.value[i]
             if key_node.tag == "tag:yaml.org,2002:merge":
-                if isinstance(value_node, yaml.ScalarNode) and value_node.tag in (
-                    "!import",
-                    "!import.anchor",
+                if (
+                    isinstance(value_node, yaml.ScalarNode)
+                    and value_node.tag in yaml_import.RESERVED_TAGS
                 ):
                     imported_value = self.construct_object(value_node)
                     data_buffer = StringIO()
@@ -35,9 +35,9 @@ class ExtrasLoader(yaml.SafeLoader):
                 if isinstance(value_node, yaml.SequenceNode):
                     for j in range(len(value_node.value)):
                         subnode = value_node.value[j]
-                        if isinstance(subnode, yaml.ScalarNode) and subnode.tag in (
-                            "!import",
-                            "!import.anchor",
+                        if (
+                            isinstance(subnode, yaml.ScalarNode)
+                            and subnode.tag in yaml_import.RESERVED_TAGS
                         ):
                             imported_value = self.construct_object(subnode)
                             data_buffer = StringIO()
