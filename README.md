@@ -4,18 +4,18 @@ Some extra scripting utilities written on top of PyYAML.
 
 ## Installation
 
-If you're using Poetry, use this repo directly:
+Install with `pip` or `poetry`:
     
 ```bash
-# poetry add git+<clone url>
-poetry add git+https://github.com/dsillman2000/yaml-extras.git
+pip install yaml-extras
 # or
-poetry add git+ssh://git@github.com:dsillman2000/yaml-extras.git
+poetry add yaml-extras
 ```
 
 ## Usage
 
 ```python
+import yaml
 from yaml_extras import ExtrasLoader
 import json
 
@@ -263,7 +263,7 @@ grandchild: !import.anchor grandchild.yml &grandchild
 
 ```yaml
 # grandchild.yml
-grandchild: &grandhcild
+grandchild: &grandchild
   name: grandchild
   age: 10
 ```
