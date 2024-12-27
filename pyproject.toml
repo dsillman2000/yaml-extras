@@ -12,7 +12,7 @@ classifiers = [
     # Indicate who your project is intended for
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: File Formats :: YAML",
+    "Topic :: File Formats",
     "Topic :: Utilities",
 
     # Specify the Python versions you support here.
