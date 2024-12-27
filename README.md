@@ -676,7 +676,9 @@ my_subdirs: !import-all-parameterized path/to/{subdirs:**}/meta.yml
 #
 ```
 
-> **Note:** There is no safeguard against cyclical imports. If you import a file that imports the original file, it will result in exceeding Python's maximum recursion depth.
+> **Note (i):** There is no safeguard against cyclical imports. If you import a file that imports the original file, it will result in exceeding Python's maximum recursion depth.
+>
+> **Note (ii):** When the leaf files of an import contain mappings, then it is simple to "merge" the metadata keys from the path into the resulting imported mappings. However, when the leaf files are scalars or sequences, then the structure of the import results are slightly more contrived. The contents of the imports will be under a `content` key in each result, with the metadata keys extracted from the path added as additional key/value pairs in the mappings.
 
 **Syntax**
 
@@ -740,6 +742,60 @@ data = {
       "math": 85,
       "science": 95,
       "english": 90
+    }
+  ]
+}
+```
+
+</details>
+<details>
+<summary>Simple parameterized import (**) with metadata</summary>
+
+```yaml
+# example.yml
+translations: !import-all-parameterized words/{langspec:**}/words.yml
+```
+
+```yaml
+# words/en/us/words.yml
+- hello
+- goodbye
+- color
+- thanks
+```
+
+```yaml
+# words/en/uk/words.yml
+- good morrow
+- toodle-oo
+- colour
+- cheers
+```
+
+```yaml
+# words/es/mx/words.yml
+- hola
+- adios
+- color
+- gracias
+```
+
+Result when loading in Python:
+
+```python
+data = {
+  "translations": [
+    {
+      "langspec": "en/us",
+      "content": ["hello", "goodbye", "color", "thanks"]
+    },
+    {
+      "langspec": "en/uk",
+      "content": ["good morrow", "toodle-oo", "colour", "cheers"]
+    },
+    {
+      "langspec": "es/mx",
+      "content": ["hola", "adios", "color", "gracias"]
     }
   ]
 }
