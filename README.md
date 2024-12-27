@@ -644,6 +644,109 @@ data = {
 
 </details>
 
+---
+
+`!import-all-parameterized` tag: Import a glob pattern of YAML files as a sequence, enriching the results with one or more metadata keys extracted from globs in the filepath. Supports merging the imports using the "<<" merge key, as well as aliasing the result of an import using an anchor.
+
+The glob pattern system only supports two types of wildcards: `*` and `**`. `*` matches any character except for `/`, while `**` matches any character including `/`. Metadata keys can be extracted from zero or more globs in the path specification with syntax like this:
+
+```yaml
+# Import all YAML files in the `path/to/*.yml` glob as a sequence, attaching to each element the
+# `basename` key extracted from the filename.
+my_data: !import-all-parameterized path/to/{basename:*}.yml
+#
+# my_data:
+#  - basename: file1
+#    key1: value1
+#  - basename: file2
+#    key2: value2
+#    key3: value3
+# 
+
+# Import all YAML files in the `path/to/**/meta.yml` glob as a sequence, attaching to each
+# element the `subdirs` key extracted from the subdirectory structure.
+my_subdirs: !import-all-parameterized path/to/{subdirs:**}/meta.yml
+#
+# my_subdirs:
+#  - subdirs: subdir1
+#    key1: value1
+#  - subdirs: subdir1/subdir2/subdir3
+#    key2: value2
+#    key3: value3
+#
+```
+
+> **Note:** There is no safeguard against cyclical imports. If you import a file that imports the original file, it will result in exceeding Python's maximum recursion depth.
+
+**Syntax**
+
+```
+!import-all-parameterized [&anchor ]<glob_pattern>
+```
+
+**Examples**
+
+<details>
+<summary>Simple parameterized import (*) with metadata</summary>
+
+```yaml
+# example.yml
+grade_book: !import-all schools/{school_name:*}/grades/{student_name:*}.yml
+```
+
+```yaml
+# schools/elementary/grades/David.yml
+math: 95
+science: 90
+english: 80
+```
+
+```yaml
+# schools/elementary/grades/Edward.yml
+math: 100
+science: 90
+english: 100
+```
+
+```yaml
+# schools/highschool/grades/Frank.yml
+math: 85
+science: 95
+english: 90
+```
+
+Result when loading in Python:
+
+```python
+data = {
+  "grade_book": [
+    {
+      "school_name": "elementary",
+      "student_name": "David",
+      "math": 95,
+      "science": 90,
+      "english": 80
+    },
+    {
+      "school_name": "elementary",
+      "student_name": "Edward",
+      "math": 100,
+      "science": 90,
+      "english": 100
+    },
+    {
+      "school_name": "highschool",
+      "student_name": "Frank",
+      "math": 85,
+      "science": 95,
+      "english": 90
+    }
+  ]
+}
+```
+
+</details>
+
 ## Roadmap
 
 ### P1
@@ -651,12 +754,15 @@ data = {
 - [x] Add support for `!import.anchor` to import specific anchors from other YAML documents (targeted import).
 - [x] Add support for `!import-all` to import a glob pattern of YAML files as a sequence.
 - [x] Add support for `!import-all.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence.
-- [ ] Add support for `!import-all-parameterized` to import a glob pattern of YAML files as a sequence with some data extracted from the filepath.
+- [x] Add support for `!import-all-parameterized` to import a glob pattern of YAML files as a sequence with some data extracted from the filepath.
 - [ ] Add support for `!import-all-parameterized.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence with some data extracted from the filepath.
 - [ ] Utilize this project in a downstream project to generate code and documentation.
 
 ### P2
+- [ ] Implement type specification system to validate YAML files against a schema using a `!ymlschema` tag system.
 - [ ] Add support for `!env` tag to import environment variables.
+
+### P3
 - [ ] VSCode / Intellisense plugin to navigate through imports using cmd + click
 
 ## Acknowledgements
