@@ -756,10 +756,9 @@ data = {
 - [x] Add support for `!import-all.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence.
 - [x] Add support for `!import-all-parameterized` to import a glob pattern of YAML files as a sequence with some data extracted from the filepath.
 - [ ] Add support for `!import-all-parameterized.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence with some data extracted from the filepath.
-- [ ] Utilize this project in a downstream project to generate code and documentation.
 
 ### P2
-- [ ] Implement type specification system to validate YAML files against a schema using a `!ymlschema` tag system.
+- [ ] Implement type specification system to validate YAML files against a schema using a `!yamlschema` tag system which mimics JSON Schema semantics and are validated upon construction.
 - [ ] Add support for `!env` tag to import environment variables.
 
 ### P3
