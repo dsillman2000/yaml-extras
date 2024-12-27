@@ -8,7 +8,6 @@ packages = [{ include = "yaml_extras" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 pyyaml = "^6.0.2"
-pyyaml-include = "^2.2"
 
 
 [tool.poetry.group.dev.dependencies]

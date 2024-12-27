@@ -97,14 +97,14 @@ all_sums: !import-all.anchor data/*.yml &sum
                 "data/one.yml": "operands: [1, 2]\nsum: &sum 3\n",
                 "data/two.yml": "operands: [3, 4]\nsum: &sum 7\n",
                 "data/extensions/three.yml": "operands: [5, 6]\nsum: &sum 11\nproduct: &product 30\n",
-                "data/exensions/four.yml": "operands: [7, 8]\nsum: &sum 15\nproduct: &product 56\n",
+                "data/extensions/four.yml": "operands: [7, 8]\nsum: &sum 15\nproduct: &product 56\n",
                 "data/omitted/extensions/five.yml": "operands: [9, 10]\nsum: &sum 19\nquotient: &quotient 0.9\n",
                 "data/extensions.yml": "sum: &sum\n  ext: !import-all.anchor data/extensions/*.yml &sum\nproduct: &product\n  ext: !import-all.anchor data/extensions/*.yml &product\n",
             },
             {
                 "all_sums": [3, 7, {"ext": [11, 15]}],
             },
-            id="nexted import-all.anchor (*)",
+            id="nested import-all.anchor (*)",
         ),
     ],
 )
