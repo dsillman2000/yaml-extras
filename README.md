@@ -803,6 +803,18 @@ data = {
 
 </details>
 
+#### Customizing the import directory
+
+By default, `!import` tags will search relative to the current working directory of the Python process. You can customize the base directory for imports by calling `yaml_import.set_import_relative_dir(...)` with the desired base directory.
+
+```python
+import yaml
+from yaml_extras import ExtrasLoader, yaml_import
+
+yaml_import.set_import_relative_dir('/path/to/imports')
+data = yaml.load('!import somefile.yml', Loader=ExtrasLoader)
+```
+
 ## Roadmap
 
 ### P1
@@ -812,6 +824,7 @@ data = {
 - [x] Add support for `!import-all.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence.
 - [x] Add support for `!import-all-parameterized` to import a glob pattern of YAML files as a sequence with some data extracted from the filepath.
 - [ ] Add support for `!import-all-parameterized.anchor` to import a specific anchor from a glob pattern of YAML files as a sequence with some data extracted from the filepath.
+- [x] Allow user to set relative import directory.
 
 ### P2
 - [ ] Implement type specification system to validate YAML files against a schema using a `!yamlschema` tag system which mimics JSON Schema semantics and are validated upon construction.

@@ -3,8 +3,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from yaml_extras import ExtrasLoader
-
 
 @pytest.mark.parametrize(
     "doc,other_docs,expected",
@@ -65,6 +63,8 @@ def test_import(
     expected: dict,
     tmp_chdir,
 ):
+    from yaml_extras import ExtrasLoader
+
     for path, content in other_docs.items():
         with open(path, "w") as f:
             f.write(content)
@@ -134,6 +134,8 @@ def test_merge_import(
     expected: dict,
     tmp_chdir,
 ):
+    from yaml_extras import ExtrasLoader
+
     for path, content in other_docs.items():
         with open(path, "w") as f:
             f.write(content)
@@ -141,3 +143,22 @@ def test_merge_import(
     doc_yml.write_text(doc)
     data = yaml.load(doc_yml.open("r"), ExtrasLoader)
     assert data == expected
+
+
+def test_import__relative_dir(tmp_path, reset_caches):
+    from yaml_extras import ExtrasLoader, yaml_import
+
+    doc = """
+data: !import data.yml
+"""
+    tmpdir: Path = tmp_path / "my" / "contrived" / "subdirectory"
+    tmpdir.mkdir(parents=True)
+    doc_yml = Path(tmpdir) / "doc.yml"
+    doc_yml.write_text(doc)
+    yaml_import.set_import_relative_dir(tmpdir)
+    data_yml = Path(tmpdir) / "data.yml"
+    data_yml.write_text("a: 1\nb: 2\n")
+
+    data = yaml.load(doc_yml.open("r"), ExtrasLoader)
+    assert data == {"data": {"a": 1, "b": 2}}
+    yaml_import._reset_import_relative_dir()

@@ -1,8 +1,7 @@
+import json
 from pathlib import Path
 from typing import Any
 import pytest
-
-from yaml_extras.file_utils import PathPattern
 
 
 @pytest.fixture
@@ -26,22 +25,22 @@ def loose_equality_for_lists():
     """
 
     def _compare(data1: Any, data2: Any) -> bool:
-        if data1 == data2:
-            return True
-        elif isinstance(data1, list) and isinstance(data2, list):
-            sort_key = str
+        if isinstance(data1, list) and isinstance(data2, list):
+            sort_key = json.dumps
             sorted_data1 = sorted(data1, key=sort_key)
             sorted_data2 = sorted(data2, key=sort_key)
             return all(_compare(d1, d2) for d1, d2 in zip(sorted_data1, sorted_data2))
         elif isinstance(data1, dict) and isinstance(data2, dict):
             return all(key in data2 and _compare(data1[key], data2[key]) for key in data1)
-        return False
+        return data1 == data2
 
     yield _compare
 
 
 @pytest.fixture
 def reset_caches():
+    from yaml_extras.file_utils import PathPattern
+
     yield
     PathPattern.glob_results.cache_clear()
     PathPattern.results.cache_clear()

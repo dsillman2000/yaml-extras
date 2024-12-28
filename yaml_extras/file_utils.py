@@ -37,6 +37,7 @@ class PathPattern:
     """
 
     pattern: str
+    relative_to: Path | None = None
 
     def __hash__(self):
         return hash(self.pattern)
@@ -102,7 +103,8 @@ class PathPattern:
         """
         global NAMED_WILDCARD_PATTERN
         pattern_without_names = re.sub(NAMED_WILDCARD_PATTERN, r"\2", self.pattern)
-        return list(Path.cwd().glob(pattern_without_names))
+        relative_to = self.relative_to or Path.cwd()
+        return list(relative_to.glob(pattern_without_names))
 
     @lru_cache
     def results(self) -> list[PathWithMetadata]:

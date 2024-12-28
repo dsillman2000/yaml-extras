@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yaml-extras"
-version = "0.1.2"
+version = "0.2.0"
 description = "A collection of YAML utilities"
 authors = ["David Sillman <dsillman2000@gmail.com>"]
 packages = [{ include = "yaml_extras" }]
