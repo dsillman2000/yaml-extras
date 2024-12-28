@@ -1,9 +1,28 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Any, Type
+from typing import IO, Any, Callable, Type
 import yaml
 
 from yaml_extras.file_utils import PathPattern, PathWithMetadata
+
+
+IMPORT_RELATIVE_DIR: Callable[[], Path] = Path.cwd
+
+
+def _reset_import_relative_dir() -> None:
+    global IMPORT_RELATIVE_DIR
+    IMPORT_RELATIVE_DIR = Path.cwd
+
+
+def get_import_relative_dir() -> Path:
+    global IMPORT_RELATIVE_DIR
+    return IMPORT_RELATIVE_DIR()
+
+
+def set_import_relative_dir(path: Path) -> None:
+    global IMPORT_RELATIVE_DIR
+    old = IMPORT_RELATIVE_DIR()
+    IMPORT_RELATIVE_DIR = lambda: path
 
 
 def load_yaml_anchor(file_stream: IO, anchor: str, loader_type: Type[yaml.Loader]) -> Any:
@@ -52,7 +71,7 @@ class ImportSpec:
 
     @classmethod
     def from_str(cls, path_str: str) -> "ImportSpec":
-        return cls(Path(path_str))
+        return cls(Path(get_import_relative_dir() / path_str))
 
 
 @dataclass
@@ -89,7 +108,7 @@ class ImportAnchorSpec:
     @classmethod
     def from_str(cls, spec_str: str) -> "ImportAnchorSpec":
         path_str, anchor = spec_str.split(" &", 1)
-        return cls(Path(path_str), anchor)
+        return cls(Path(get_import_relative_dir() / path_str), anchor)
 
 
 @dataclass
@@ -124,12 +143,12 @@ class ImportAllSpec:
 
     @classmethod
     def from_str(cls, path_pattern_str: str) -> "ImportAllSpec":
-        path_pattern = PathPattern(path_pattern_str)
+        path_pattern = PathPattern(path_pattern_str, get_import_relative_dir())
         if path_pattern.names != []:
             raise ValueError(
                 "Named wildcards are not supported in !import-all. Use !import-all-parameterized instead."
             )
-        return cls(PathPattern(path_pattern_str))
+        return cls(PathPattern(path_pattern_str, get_import_relative_dir()))
 
 
 @dataclass
@@ -169,12 +188,12 @@ class ImportAllAnchorSpec:
     @classmethod
     def from_str(cls, path_pattern_str_w_anchor: str) -> "ImportAllAnchorSpec":
         path_pattern_str, anchor = path_pattern_str_w_anchor.split(" &", 1)
-        path_pattern = PathPattern(path_pattern_str)
+        path_pattern = PathPattern(path_pattern_str, get_import_relative_dir())
         if path_pattern.names != []:
             raise ValueError(
                 "Named wildcards are not supported in !import-all. Use !import-all-parameterized instead."
             )
-        return cls(PathPattern(path_pattern_str), anchor)
+        return cls(PathPattern(path_pattern_str, get_import_relative_dir()), anchor)
 
 
 @dataclass
@@ -212,7 +231,7 @@ class ImportAllParameterizedSpec:
     @classmethod
     def from_str(cls, path_pattern_str: str) -> "ImportAllParameterizedSpec":
         try:
-            return cls(PathPattern(path_pattern_str))
+            return cls(PathPattern(path_pattern_str, get_import_relative_dir()))
         except Exception as e:
             raise ValueError(f"Failed to form path pattern: {path_pattern_str}") from e
 

@@ -3,8 +3,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from yaml_extras import ExtrasLoader
-
 
 @pytest.mark.parametrize(
     "doc,other_docs,expected",
@@ -134,6 +132,8 @@ def test_import_all(
     loose_equality_for_lists,
     reset_caches,
 ):
+    from yaml_extras import ExtrasLoader
+
     for path, content in other_docs.items():
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as f:
@@ -142,3 +142,25 @@ def test_import_all(
     doc_yml.write_text(doc)
     data = yaml.load(doc_yml.open("r"), ExtrasLoader)
     assert loose_equality_for_lists(data, expected)
+
+
+def test_import_all__relative_dir(tmp_path, reset_caches):
+    from yaml_extras import ExtrasLoader, yaml_import
+
+    doc = """
+data: !import-all data/*.yml
+"""
+    tmpdir: Path = tmp_path / "my" / "contrived" / "subdirectory"
+    tmpdir.mkdir(parents=True)
+    doc_yml = Path(tmpdir) / "doc.yml"
+    doc_yml.write_text(doc)
+    yaml_import.set_import_relative_dir(tmpdir)
+    data_dir = Path(tmpdir) / "data"
+    data_dir.mkdir(parents=True)
+    data1_yml = data_dir / "one.yml"
+    data1_yml.write_text("a: 1\n")
+    data2_yml = data_dir / "two.yml"
+    data2_yml.write_text("b: 2\n")
+    data = yaml.load(doc_yml.open("r"), ExtrasLoader)
+    assert data == {"data": [{"a": 1}, {"b": 2}]}
+    yaml_import._reset_import_relative_dir()

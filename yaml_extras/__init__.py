@@ -1,4 +1,3 @@
-import os
 from io import StringIO
 
 import yaml
@@ -7,6 +6,7 @@ from yaml_extras import yaml_import
 
 
 class ExtrasLoader(yaml.SafeLoader):
+
     def __init__(self, stream):
         super().__init__(stream)
         for tag, constructor in yaml_import.RESERVED_TAGS.items():
