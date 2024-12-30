@@ -2,6 +2,8 @@
 
 Some extra scripting utilities written on top of PyYAML.
 
+See the full docs at [yaml-extras.pages.dev](https://yaml-extras.pages.dev).
+
 ## Installation
 
 Install with `pip` or `poetry`:
