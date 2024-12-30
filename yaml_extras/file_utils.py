@@ -1,3 +1,28 @@
+"""
+This module provides some handy utilities for parsing and working with the specialized "path 
+patterns" utilized by `yaml-extras` in the construction of `!import` tags. Some example valid path
+patterns include:
+
+The core abstraction provided by this module is the `PathPattern`, which is a custom implementation
+of UNIX-like glob search on `pathlib.Path` objects, except that it also supports naming wildcard
+globs so that their values can be extracted and referenced elsewhere.
+
+``` yaml
+# Use of anonymous * wildcard
+- data/*.yml
+# Use of anonymous ** wildcard
+- data/**/*.yml
+# Use of named wildcards
+- data/{name:*}.yml
+- data/{sub_path:**}/info.yml
+- data/{name:*}/{sub_path:**}/{base_name:*}.yml
+```
+
+The results retrieved by a `PathPattern` are `PathWithMetadata` objects, which are a wrapper class
+around `pathlib.Path` objects that also store optional metadata. This metadata is extracted from the
+named wildcards in the pattern.
+"""
+
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -7,7 +32,16 @@ from typing import Any
 
 @dataclass
 class PathWithMetadata:
-    """Custom dataclass to store a Path object with optional metadata."""
+    """Custom dataclass to store a Path object with optional metadata.
+
+    Attributes:
+        path (Path): Path object.
+        metadata (Any): Optional metadata. Defaults to None.
+
+    Methods:
+        __hash__: Return the hash of the PathWithMetadata object, which is the hash of the path and
+            string representation of the metadata.
+    """
 
     path: Path
     metadata: Any = None
@@ -29,11 +63,28 @@ class PathPattern:
     include metadata as PathWithMetadata dataclasses.
 
     Limitations:
-      - Only supports '*' and '**' wildcards.
+      - Only supports `*` and `**` wildcards.
       - Only officially supports selecting files, not directories.
 
     Enhancements:
-      - Supports named wildcards with syntax '{name:*}' and '{name:**}'.
+      - Supports named wildcards with syntax `{name:*}` and `{name:**}`.
+
+    Attributes:
+        pattern (str): Pattern to match, using the supported `*` and `**` wildcards and named
+            wildcards.
+        relative_to (Path): Path to search for files. Defaults to None, which assumes the current
+            working directory.
+
+    Methods:
+        __hash__: Return the hash of the PathPattern object, which is the hash of the string glob
+            pattern.
+        names: Return all named wildcards in the pattern.
+        as_regex: Convert a pattern to a regular expression which should match all paths that match
+            the UNIX glob pattern.
+        glob_results: Return all paths that match the pattern using standard pathlib.Path.glob()
+            method, returning simple Paths without metadata.
+        results: Return all paths that match the pattern, including the metadata parsed from the
+            named wildcards in the pattern.
     """
 
     pattern: str
@@ -44,7 +95,8 @@ class PathPattern:
 
     @property
     def names(self) -> list[str]:
-        """Return all named wildcards in the pattern.
+        """Return all named wildcards in the pattern. E.g., for the pattern `data/{name:*}.yml`, the
+        only named wildcard is "name", so this method would return `["name"]`.
 
         Returns:
             list[str]: List of named wildcards.
@@ -53,10 +105,12 @@ class PathPattern:
 
     @classmethod
     def as_regex(cls, pattern: str) -> re.Pattern:
-        """Convert a pattern to a regular expression.
+        """Convert a pattern to a regular expression. The regular expression should match all paths
+        that match the UNIX glob pattern, meaning that "*" wildcards match any character except
+        slashes, and "**" wildcards match any characters including slashes.
 
         Args:
-            pattern (str): Pattern to convert.
+            pattern (str): Glob pattern to convert to a regex expression.
 
         Returns:
             re.Pattern: Compiled regular expression object.
@@ -95,8 +149,8 @@ class PathPattern:
 
     @lru_cache
     def glob_results(self) -> list[Path]:
-        """Return all paths that match the pattern using standard pathlib.Path.glob() method, returning
-        simple Paths without metadata.
+        """Return all paths that match the pattern using standard pathlib.Path.glob() method,
+        returning simple Paths without metadata.
 
         Returns:
             list[Path]: List of pathlib.Path objects matching the pattern.

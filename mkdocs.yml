@@ -1,0 +1,21 @@
+site_name: yaml-extras
+
+theme:
+  name: material
+  # set up code highlighting
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+
+watch:
+  - docs
+  - mkdocs.yml
+  - yaml_extras
+
+plugins:
+  - search
+  - mkdocstrings
