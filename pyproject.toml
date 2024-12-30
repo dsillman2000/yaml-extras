@@ -7,6 +7,7 @@ packages = [{ include = "yaml_extras" }]
 readme = "README.md"
 license = "MIT"
 keywords = ["yaml", "yml", "pyyaml", "extras", "yaml-extras"]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     # Indicate who your project is intended for
@@ -22,6 +23,7 @@ classifiers = [
 ]
 
 [project.urls]
+Documentation = "https://yaml-extras.pages.dev/"
 Repository = "https://github.com/dsillman2000/yaml-extras.git"
 
 
