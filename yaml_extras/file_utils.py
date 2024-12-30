@@ -1,11 +1,11 @@
 """
 This module provides some handy utilities for parsing and working with the specialized "path 
-patterns" utilized by `yaml-extras` in the construction of `!import` tags. Some example valid path
-patterns include:
+patterns" utilized by `yaml-extras` in the construction of `!import` tags.
 
 The core abstraction provided by this module is the `PathPattern`, which is a custom implementation
 of UNIX-like glob search on `pathlib.Path` objects, except that it also supports naming wildcard
-globs so that their values can be extracted and referenced elsewhere.
+globs so that their values can be extracted and referenced elsewhere. Some example valid path
+patterns include:
 
 ``` yaml
 # Use of anonymous * wildcard
