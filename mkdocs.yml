@@ -1,15 +1,24 @@
 site_name: yaml-extras
 
+# repo link in top right corner
+repo_url: "https://github.com/dsillman2000/yaml-extras"
+repo_name: "yaml-extras"
+
+# material theme
 theme:
   name: material
-  # set up code highlighting
 
+# highlighting
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.superfences
+
+# custom css
+extra_css:
+  - stylesheets/extra.css
 
 watch:
   - docs
