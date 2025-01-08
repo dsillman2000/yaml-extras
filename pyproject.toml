@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yaml-extras"
-version = "0.2.1"
+version = "0.2.2"
 description = "A collection of YAML utilities"
 authors = ["David Sillman <dsillman2000@gmail.com>"]
 packages = [{ include = "yaml_extras" }]
@@ -30,7 +30,6 @@ Repository = "https://github.com/dsillman2000/yaml-extras.git"
 [tool.poetry.dependencies]
 python = "^3.11"
 pyyaml = "^6.0.2"
-mkdocs-material = "^9.5.49"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -39,6 +38,7 @@ pytest = "^8.3.3"
 
 [tool.poetry.group.doc.dependencies]
 mkdocs = "^1.6.1"
+mkdocs-material = "^9.5.49"
 mkdocstrings = { extras = ["python"], version = "^0.27.0" }
 
 
