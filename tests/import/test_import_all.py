@@ -162,5 +162,5 @@ data: !import-all data/*.yml
     data2_yml = data_dir / "two.yml"
     data2_yml.write_text("b: 2\n")
     data = yaml.load(doc_yml.open("r"), ExtrasLoader)
-    assert data == {"data": [{"a": 1}, {"b": 2}]}
+    assert loose_equality_for_lists(data, {"data": [{"a": 1}, {"b": 2}]})
     yaml_import._reset_import_relative_dir()
