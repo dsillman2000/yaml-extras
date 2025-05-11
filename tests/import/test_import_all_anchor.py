@@ -125,7 +125,7 @@ def test_import_anchor(
     assert loose_equality_for_lists(data, expected)
 
 
-def test_import_all_anchor__relative_dir(tmp_path, reset_caches):
+def test_import_all_anchor__relative_dir(tmp_path, reset_caches, loose_equality_for_lists):
     from yaml_extras import ExtrasLoader, yaml_import
 
     doc = """
@@ -144,5 +144,5 @@ data: !import-all.anchor data/*.yml &sum
     data2_yml.write_text("operands: [3, 4]\nsum: &sum 7\n")
 
     data = yaml.load(doc_yml.open("r"), ExtrasLoader)
-    assert data == {"data": [3, 7]}
+    assert loose_equality_for_lists(data, {"data": [3, 7]})
     yaml_import._reset_import_relative_dir()
