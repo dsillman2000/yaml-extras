@@ -20,7 +20,10 @@ a: !import other.yml
 a: !import other.yml
 b: !import other.yml
 """,
-            {"other.yml": "b: 2\nc: !import another.yml", "another.yml": "inner: 'most'"},
+            {
+                "other.yml": "b: 2\nc: !import another.yml",
+                "another.yml": "inner: 'most'",
+            },
             {
                 "a": {"b": 2, "c": {"inner": "most"}},
                 "b": {"b": 2, "c": {"inner": "most"}},

@@ -3,7 +3,7 @@ name = "yaml-extras"
 version = "0.2.2"
 description = "A collection of YAML utilities"
 authors = [{ name = "David Sillman", email = "dsillman2000@gmail.com" }]
-packages = [{ include = "yaml_extras" }]
+# packages = [{ include = "yaml_extras" }]
 readme = "README.md"
 license = "MIT"
 keywords = ["yaml", "yml", "pyyaml", "extras", "yaml-extras"]
@@ -26,6 +26,7 @@ name = "yaml-extras"
 version = "0.2.2"
 description = "A collection of YAML utilities"
 authors = ["David Sillman <dsillman2000@gmail.com>"]
+# packages = [{ include = "yaml_extras" }]
 
 [project.urls]
 Documentation = "https://yaml-extras.pages.dev/"
@@ -39,6 +40,7 @@ pyyaml = "^6.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
+pre-commit = "^4.2.0"
 
 
 [tool.poetry.group.doc.dependencies]

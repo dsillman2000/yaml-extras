@@ -31,8 +31,14 @@ def test_path_pattern_glob_results(tmp_path: Path, tmp_chdir, reset_caches):
         },
     }
     materialize_dir_tree(tree)
-    assert set(PathPattern("a/*").glob_results()) == {tmp_path / "a" / "b", tmp_path / "a" / "c"}
-    assert set(PathPattern("d/*").glob_results()) == {tmp_path / "d" / "e", tmp_path / "d" / "f"}
+    assert set(PathPattern("a/*").glob_results()) == {
+        tmp_path / "a" / "b",
+        tmp_path / "a" / "c",
+    }
+    assert set(PathPattern("d/*").glob_results()) == {
+        tmp_path / "d" / "e",
+        tmp_path / "d" / "f",
+    }
     assert set(PathPattern("*/b").glob_results()) == {tmp_path / "a" / "b"}
 
 
@@ -126,9 +132,7 @@ def test_path_pattern_results_named(tmp_path: Path, tmp_chdir, reset_caches):
         PathWithMetadata(tmp_path / "d" / "e.l", {"second": "e"}),
         PathWithMetadata(tmp_path / "d" / "f.l", {"second": "f"}),
     }
-    assert set(PathPattern("{root:*}/b.l").results()) == {
-        PathWithMetadata(tmp_path / "a" / "b.l", {"root": "a"})
-    }
+    assert set(PathPattern("{root:*}/b.l").results()) == {PathWithMetadata(tmp_path / "a" / "b.l", {"root": "a"})}
     assert set(PathPattern("g/{pre_o:*}o/{second:*}.l").results()) == {
         PathWithMetadata(tmp_path / "g" / "ho" / "l.l", {"pre_o": "h", "second": "l"}),
         PathWithMetadata(tmp_path / "g" / "ho" / "m.l", {"pre_o": "h", "second": "m"}),

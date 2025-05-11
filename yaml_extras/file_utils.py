@@ -1,5 +1,5 @@
 """
-This module provides some handy utilities for parsing and working with the specialized "path 
+This module provides some handy utilities for parsing and working with the specialized "path
 patterns" utilized by `yaml-extras` in the construction of `!import` tags.
 
 The core abstraction provided by this module is the `PathPattern`, which is a custom implementation

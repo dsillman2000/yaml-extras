@@ -67,7 +67,12 @@ leaves: !import-all-parameterized branches/{path:**}/{name:*}.yml
                     {"path": "branch1", "name": "leaf1", "id": "001", "age": 17},
                     {"path": "branch1", "name": "leaf2", "id": "002", "age": 30},
                     {"path": "branch2", "name": "leaf3", "id": "003", "age": 7},
-                    {"path": "branch2/branch3", "name": "leaf4", "id": "004", "age": 10},
+                    {
+                        "path": "branch2/branch3",
+                        "name": "leaf4",
+                        "id": "004",
+                        "age": 10,
+                    },
                     {
                         "path": "branch2/branch3/branch4/branch5",
                         "name": "leaf5",
@@ -151,7 +156,5 @@ data: !import-all-parameterized data/{num:*}.yml
         data_yml = data_dir / f"{i}.yml"
         data_yml.write_text(f"number: {i}\n")
     data = yaml.load(doc_yml.open("r"), ExtrasLoader)
-    assert loose_equality_for_lists(
-        data, {"data": [{"num": str(i), "number": i} for i in range(1, 6)]}
-    )
+    assert loose_equality_for_lists(data, {"data": [{"num": str(i), "number": i} for i in range(1, 6)]})
     yaml_import._reset_import_relative_dir()

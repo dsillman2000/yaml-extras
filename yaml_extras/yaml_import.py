@@ -7,9 +7,9 @@ The following tags are supported:
 - `!import`: Import the entire contents of a file into the current document.
 - `!import.anchor`: Import a specific anchor from within a file.
 - `!import-all`: Import all files that match a pattern as a sequence of objects.
-- `!import-all.anchor`: Import a specific anchor from all files that match a pattern as a sequence 
+- `!import-all.anchor`: Import a specific anchor from all files that match a pattern as a sequence
   of objects.
-- `!import-all-parameterized`: Import all files that match a pattern as a sequence of objects, 
+- `!import-all-parameterized`: Import all files that match a pattern as a sequence of objects,
   including merging the named wildcards into the results.
 """
 
@@ -82,9 +82,7 @@ def load_yaml_anchor(file_stream: IO, anchor: str, loader_type: Type[yaml.Loader
     if not events:
         raise ValueError(f"Anchor '{anchor}' not found in {file_stream.name}")
     events = (
-        [yaml.StreamStartEvent(), yaml.DocumentStartEvent()]
-        + events
-        + [yaml.DocumentEndEvent(), yaml.StreamEndEvent()]
+        [yaml.StreamStartEvent(), yaml.DocumentStartEvent()] + events + [yaml.DocumentEndEvent(), yaml.StreamEndEvent()]
     )
     return yaml.load(yaml.emit(evt for evt in events), loader_type)
 
@@ -342,8 +340,7 @@ class ImportAllSpec:
         path_pattern = PathPattern(path_pattern_str, get_import_relative_dir())
         if path_pattern.names != []:
             raise ValueError(
-                "Named wildcards are not supported in !import-all. Use !import-all-parameterized "
-                "instead."
+                "Named wildcards are not supported in !import-all. Use !import-all-parameterized " "instead."
             )
         return cls(PathPattern(path_pattern_str, get_import_relative_dir()))
 
@@ -458,8 +455,7 @@ class ImportAllAnchorSpec:
         path_pattern = PathPattern(path_pattern_str, get_import_relative_dir())
         if path_pattern.names != []:
             raise ValueError(
-                "Named wildcards are not supported in !import-all. Use !import-all-parameterized "
-                "instead."
+                "Named wildcards are not supported in !import-all. Use !import-all-parameterized " "instead."
             )
         return cls(PathPattern(path_pattern_str, get_import_relative_dir()), anchor)
 
@@ -630,9 +626,7 @@ class ImportAllParameterizedConstructor:
             raise TypeError(f"!import-all Expected a string scalar, got {type(node)}")
         return self.load(type(loader), import_spec)
 
-    def load(
-        self, loader_type: Type[yaml.Loader], import_spec: ImportAllParameterizedSpec
-    ) -> list[Any]:
+    def load(self, loader_type: Type[yaml.Loader], import_spec: ImportAllParameterizedSpec) -> list[Any]:
         """Utility function which, using the specified loader type and the
         `ImportAllParameterizedSpec`, attempts to load the contents of the files that match the
         pattern into a sequence of objects, including merging the named wildcards into the results.
@@ -652,7 +646,7 @@ class ImportAllParameterizedConstructor:
             path_w_metadata: yaml.load(path_w_metadata.path.open("r"), loader_type)
             for path_w_metadata in import_spec.path_pattern.results()
         }
-        _to_object = lambda content: content if isinstance(content, dict) else {"content": content}
+        _to_object = lambda content: (content if isinstance(content, dict) else {"content": content})
         return [
             _to_object(content) | (path_w_metadata.metadata or {})
             for path_w_metadata, content in import_results.items()
