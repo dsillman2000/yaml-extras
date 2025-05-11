@@ -93,12 +93,7 @@ items: &list [foo, bar, baz, buzz]
         ),
     ],
 )
-def test_import_anchor(
-    doc: str,
-    other_docs: dict[str, str],
-    expected: dict,
-    tmp_chdir,
-):
+def test_import_anchor(doc: str, other_docs: dict[str, str], expected: dict, tmp_chdir, reset_caches):
     from yaml_extras import ExtrasLoader
 
     for path, content in other_docs.items():
@@ -165,7 +160,7 @@ def test_merge_import_anchor(
     assert data == expected
 
 
-def test_import_anchor__relative_dir(tmp_path, reset_caches):
+def test_import_anchor__relative_dir(tmp_path, reset_caches, loose_equality_for_lists):
     from yaml_extras import ExtrasLoader, yaml_import
 
     doc = """

@@ -144,7 +144,7 @@ def test_import_all(
     assert loose_equality_for_lists(data, expected)
 
 
-def test_import_all__relative_dir(tmp_path, reset_caches):
+def test_import_all__relative_dir(tmp_path, reset_caches, loose_equality_for_lists):
     from yaml_extras import ExtrasLoader, yaml_import
 
     doc = """
